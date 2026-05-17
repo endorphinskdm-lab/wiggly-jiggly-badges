@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badge Collection — Wiggly, Jiggly, Squiggly Me!</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff5f8;min-height:100vh;padding:28px 16px 56px}
+  .header{text-align:center;margin-bottom:24px}
+  .logo{font-size:11px;font-weight:700;letter-spacing:0.1em;color:#FF6B9D;text-transform:uppercase;margin-bottom:6px}
+  h1{font-size:26px;font-weight:700;color:#3C3489;line-height:1.25;margin-bottom:6px}
+  .sub{font-size:14px;color:#999;margin-bottom:8px}
+  .progress-bar-wrap{max-width:340px;margin:0 auto 4px;height:10px;background:#eee;border-radius:10px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,#FF6B9D,#7F77DD);border-radius:10px;transition:width .5s}
+  .progress-label{font-size:12px;color:#aaa;margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;max-width:720px;margin:0 auto}
+
+  /* unlocked card */
+  .badge-card{background:#fff;border-radius:16px;border:2px solid #eee;padding:16px 10px;text-align:center;text-decoration:none;display:block;transition:transform .15s,box-shadow .15s;cursor:pointer}
+  .badge-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+  .badge-card:active{transform:scale(.97)}
+
+  /* locked card */
+  .badge-locked{background:#f7f7f7;border-radius:16px;border:2px dashed #ddd;padding:16px 10px;text-align:center;display:block;cursor:default;opacity:.6}
+
+  .badge-icon{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;overflow:hidden}
+  .badge-icon img{width:58px;height:58px;object-fit:contain;border-radius:50%}
+  .badge-fb{width:58px;height:58px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:26px}
+  .lock-icon{font-size:28px;color:#ccc}
+  .badge-title{font-size:12px;font-weight:700;margin-bottom:3px;line-height:1.3}
+  .badge-sub{font-size:11px}
+  .badge-locked .badge-title{color:#bbb}
+  .badge-locked .badge-sub{color:#ccc}
+
+  .reset-wrap{text-align:center;margin-top:28px}
+  .reset-btn{background:none;border:1px solid #ddd;border-radius:20px;padding:8px 20px;font-size:12px;color:#aaa;cursor:pointer;font-family:inherit}
+  .reset-btn:hover{background:#f0f0f0}
+  .footer{text-align:center;margin-top:16px;font-size:12px;color:#ccc}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">Wiggly, Jiggly, Squiggly Me!</div>
+  <h1>Your Badge Collection 🏆</h1>
+  <div class="sub">Scan the QR code on each coloring page to unlock badges!</div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">Loading…</div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" id="resetBtn">Reset progress</button>
+</div>
+<div class="footer">Wiggly, Jiggly, Squiggly Me! &copy; 2025 &nbsp;·&nbsp; Keep coloring! 🔴</div>
+
+<script>
+var BADGES   = [{"slug":"whole-body","name":"Body Explorer","img":"body-explorer.png","color":"#FF6B9D","light":"#FFE0E8","dark":"#993556","id":1,"href":"badges/whole-body.html"},{"slug":"brain","name":"Brain Boss","img":"brain-boss.png","color":"#7F77DD","light":"#EEEDFE","dark":"#3C3489","id":2,"href":"badges/brain.html"},{"slug":"eyes","name":"Eagle Eye","img":"eagle-eye.png","color":"#378ADD","light":"#E6F1FB","dark":"#0C447C","id":3,"href":"badges/eyes.html"},{"slug":"ears","name":"Super Listener","img":"super-listener.png","color":"#5DCAA5","light":"#E1F5EE","dark":"#085041","id":4,"href":"badges/ears.html"},{"slug":"nose","name":"Sniff Champion","img":"sniff-champion.png","color":"#EF9F27","light":"#FAEEDA","dark":"#633806","id":5,"href":"badges/nose.html"},{"slug":"mouth","name":"Taste Bud Hero","img":"taste-bud-hero.png","color":"#D4537E","light":"#FBEAF0","dark":"#72243E","id":6,"href":"badges/mouth.html"},{"slug":"teeth","name":"Brush Superstar","img":"brush-superstar.png","color":"#85B7EB","light":"#E6F1FB","dark":"#185FA5","id":7,"href":"badges/teeth.html"},{"slug":"heart","name":"Heart Hero","img":"heart-hero.png","color":"#FF6B9D","light":"#FFE0E8","dark":"#993556","id":8,"href":"badges/heart.html"},{"slug":"blood","name":"Highway Star","img":"highway-star.png","color":"#E24B4A","light":"#FCEBEB","dark":"#791F1F","id":9,"href":"badges/blood.html"},{"slug":"lungs","name":"Deep Breather","img":"deep-breather.png","color":"#1D9E75","light":"#E1F5EE","dark":"#085041","id":10,"href":"badges/lungs.html"},{"slug":"stomach","name":"Gus's Best Friend","img":"gus-best-friend.png","color":"#EF9F27","light":"#FAEEDA","dark":"#633806","id":11,"href":"badges/stomach.html"},{"slug":"small-intestine","name":"Wiggle Master","img":"wiggle-master.png","color":"#D4537E","light":"#FBEAF0","dark":"#72243E","id":12,"href":"badges/small-intestine.html"},{"slug":"large-intestine","name":"Poop Scientist","img":"poop-scientist.png","color":"#BA7517","light":"#FAEEDA","dark":"#633806","id":13,"href":"badges/large-intestine.html"},{"slug":"liver","name":"Hard Worker","img":"hard-worker.png","color":"#639922","light":"#EAF3DE","dark":"#27500A","id":14,"href":"badges/liver.html"},{"slug":"kidneys","name":"Clean Machine","img":"clean-machine.png","color":"#378ADD","light":"#E6F1FB","dark":"#0C447C","id":15,"href":"badges/kidneys.html"},{"slug":"skeleton","name":"Bone Dancer","img":"bone-dancer.png","color":"#888780","light":"#F1EFE8","dark":"#444441","id":16,"href":"badges/skeleton.html"},{"slug":"skull","name":"Helmet Guardian","img":"helmet-guardian.png","color":"#534AB7","light":"#EEEDFE","dark":"#3C3489","id":17,"href":"badges/skull.html"},{"slug":"muscles","name":"Flex Champion","img":"flex-champion.png","color":"#D85A30","light":"#FAECE7","dark":"#712B13","id":18,"href":"badges/muscles.html"},{"slug":"skin","name":"Shield Master","img":"shield-master.png","color":"#97C459","light":"#EAF3DE","dark":"#27500A","id":19,"href":"badges/skin.html"},{"slug":"hair-nails","name":"Keratin Kid","img":"keratin-kid.png","color":"#AFA9EC","light":"#EEEDFE","dark":"#26215C","id":20,"href":"badges/hair-nails.html"},{"slug":"spine","name":"Stack Attack","img":"stack-attack.png","color":"#1D9E75","light":"#E1F5EE","dark":"#085041","id":21,"href":"badges/spine.html"},{"slug":"hands","name":"Fingertip Genius","img":"fingertip-genius.png","color":"#378ADD","light":"#E6F1FB","dark":"#0C447C","id":22,"href":"badges/hands.html"},{"slug":"feet","name":"Lifelong Adventurer","img":"lifelong-adventurer.png","color":"#D85A30","light":"#FAECE7","dark":"#712B13","id":23,"href":"badges/feet.html"},{"slug":"whole-body-outro","name":"Body Master","img":"body-master.png","color":"#EF9F27","light":"#FAEEDA","dark":"#633806","id":24,"href":"badges/whole-body-outro.html"}];
+var FALLBACK = ["🔴","🧠","👁️","👂","👃","👅","🦷","❤️","🔴","🫁","🫃","🌀","💩","⭐","✨","💀","🛡️","💪","🌟","✂️","🏗️","👋","👣","🏆"];
+
+function getUnlocked() {
+  try { return JSON.parse(localStorage.getItem('wjsm_unlocked') || '[]'); } catch(e) { return []; }
+}
+
+function render() {
+  var unlocked = getUnlocked();
+  var count    = 0;
+  var grid     = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  BADGES.forEach(function(b, idx) {
+    var isUnlocked = unlocked.indexOf(b.slug) !== -1;
+    if (isUnlocked) count++;
+
+    var el = document.createElement(isUnlocked ? 'a' : 'div');
+    el.className = isUnlocked ? 'badge-card' : 'badge-locked';
+    if (isUnlocked) { el.href = b.href; el.style.borderColor = b.light; }
+
+    if (isUnlocked) {
+      el.innerHTML =
+        '<div class="badge-icon" style="background:' + b.light + ';border:3px solid ' + b.color + '">' +
+          '<img src="images/' + b.img + '" alt="' + b.name + '" ' +
+               'onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">' +
+          '<div class="badge-fb" style="background:' + b.color + '">' + FALLBACK[idx] + '</div>' +
+        '</div>' +
+        '<div class="badge-title" style="color:' + b.dark + '">' + b.name + '</div>' +
+        '<div class="badge-sub" style="color:' + b.color + '">Page ' + b.id + '</div>';
+    } else {
+      el.innerHTML =
+        '<div class="badge-icon" style="background:#f0f0f0;border:3px solid #ddd">' +
+          '<div class="lock-icon">🔒</div>' +
+        '</div>' +
+        '<div class="badge-title">Page ' + b.id + '</div>' +
+        '<div class="badge-sub">Scan to unlock</div>';
+    }
+
+    grid.appendChild(el);
+  });
+
+  // Progress bar
+  var pct = Math.round((count / BADGES.length) * 100);
+  document.getElementById('progressFill').style.width  = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    count === BADGES.length
+      ? '🎉 All ' + BADGES.length + ' badges collected! Amazing!'
+      : count + ' of ' + BADGES.length + ' badges unlocked — keep coloring!';
+}
+
+document.getElementById('resetBtn').addEventListener('click', function() {
+  if (confirm('Reset all badge progress? This cannot be undone.')) {
+    try { localStorage.removeItem('wjsm_unlocked'); } catch(e) {}
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
